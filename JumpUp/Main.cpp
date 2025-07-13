@@ -25,16 +25,32 @@ void Main()
 
 	Circle player(300, 700, 20);
 	Scaffold scaffold(0, 750, 600, 50);
+	int jumpFrame = 0;
 
 	while (System::Update())
 	{
-
-		player.draw(Palette::Blue);
-
 		if (KeyLeft.pressed()) player.moveBy(-5, 0);
 		if (KeyRight.pressed()) player.moveBy(5, 0);
 
-		if (KeySpace.pressed()) player.moveBy(0, -5);
+		if (scaffold.isColliding(player))
+		{
+			if (KeySpace.down() && jumpFrame <= 0)
+			{
+				jumpFrame = 30;
+			}
+		}
+		else
+		{
+			player.moveBy(0, +5); // Gravity
+		}
+
+		if (jumpFrame > 0)
+		{
+			player.moveBy(0, -10);
+			jumpFrame--;
+		}
+
+		player.draw(Palette::Blue);
 
 		scaffold.draw();
 
