@@ -6,8 +6,7 @@ private:
 	Rect m_rect;
 public:
 	Scaffold(int x, int y, int width, int height)
-		: m_rect(x, y, width, height) {
-	}
+		: m_rect(x, y, width, height) {}
 
 	void draw() const
 	{
@@ -19,40 +18,87 @@ public:
 	}
 };
 
-void Main()
+class Player
 {
-	Window::Resize(600, 800);
+private:
+	Circle m_circle;
+	bool m_isGrounded;
+	int m_jumpFrame;
+public:
 
-	Circle player(300, 700, 20);
-	Scaffold scaffold(0, 750, 600, 50);
-	int jumpFrame = 0;
+	Player(double x, double y, double radius)
+		: m_circle(x, y, radius), m_isGrounded(false), m_jumpFrame(0) {
+	}
 
-	while (System::Update())
+	void checkGround(const Array<Scaffold> scaffolds)
 	{
-		if (KeyLeft.pressed()) player.moveBy(-5, 0);
-		if (KeyRight.pressed()) player.moveBy(5, 0);
-
-		if (scaffold.isColliding(player))
+		m_isGrounded = false; // Reset grounded state
+		for (const auto& scaffold : scaffolds)
 		{
-			if (KeySpace.down() && jumpFrame <= 0)
+			if (scaffold.isColliding(m_circle))
 			{
-				jumpFrame = 30;
+				m_isGrounded = true;
+				break;
+			}
+		}
+	}
+
+	void draw(const ColorF& color) const
+	{
+		m_circle.draw(color);
+	}
+	void update()
+	{
+		if (KeyLeft.pressed()) m_circle.moveBy(-5, 0);
+		if (KeyRight.pressed()) m_circle.moveBy(5, 0);
+		if (m_isGrounded)
+		{
+			if (KeySpace.down() && m_jumpFrame <= 0)
+			{
+				m_jumpFrame = 30;
 			}
 		}
 		else
 		{
-			player.moveBy(0, +5); // Gravity
+			m_circle.moveBy(0, +5); // Gravity
 		}
 
-		if (jumpFrame > 0)
+		if (m_jumpFrame > 0)
 		{
-			player.moveBy(0, -10);
-			jumpFrame--;
+			m_circle.moveBy(0, -10);
+			m_jumpFrame--;
 		}
+	}
+
+};
+
+void Main()
+{
+	Window::Resize(600, 800);
+
+	Player player(300, 700, 20);
+
+	Scaffold scaffold(0, 750, 600, 50);
+	Scaffold scaffold2(100, 600, 400, 20);
+	Scaffold scaffold3(200, 450, 200, 20);
+
+	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3 };
+
+	int jumpFrame = 0;
+
+	while (System::Update())
+	{
+
 
 		player.draw(Palette::Blue);
+		player.update();
+		player.checkGround(scaffolds);
 
-		scaffold.draw();
+		for (auto& scaffold : scaffolds)
+		{
+			scaffold.draw();
+		}
+
 
 
 	}
