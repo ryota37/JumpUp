@@ -8,13 +8,17 @@ public:
 	Scaffold(int x, int y, int width, int height)
 		: m_rect(x, y, width, height) {}
 
-	void draw() const
+	void draw(Color color) const
 	{
-		m_rect.draw(Palette::Green);
+		m_rect.draw(color);
 	}
 	bool isColliding(const Circle& player) const
 	{
 		return m_rect.intersects(player);
+	}
+	int get_y() const
+	{
+		return m_rect.y;
 	}
 };
 
@@ -35,7 +39,7 @@ public:
 		m_isGrounded = false; // Reset grounded state
 		for (const auto& scaffold : scaffolds)
 		{
-			if (scaffold.isColliding(m_circle))
+			if (scaffold.isColliding(m_circle) && m_circle.y < scaffold.get_y())
 			{
 				m_isGrounded = true;
 				break;
@@ -83,27 +87,26 @@ void Main()
 	Scaffold scaffold3(200, 450, 200, 20);
 	Scaffold scaffold4(0, 300, 200, 20); 
 	Scaffold scaffold5(150, 150, 200, 20);
-	Scaffold scaffold6(300, 50, 100, 20);
 
-	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5, scaffold6};
+	Scaffold mid_goal(300, 50, 100, 20);
+
+	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5};
+	Array<Scaffold> all_scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5, mid_goal };
 
 	int jumpFrame = 0;
 
 	while (System::Update())
 	{
-
-
 		player.draw(Palette::Blue);
 		player.update();
-		player.checkGround(scaffolds);
+
+		player.checkGround(all_scaffolds);
 
 		for (auto& scaffold : scaffolds)
 		{
-			scaffold.draw();
+			scaffold.draw(Palette::Green);
 		}
-
-
-
+		mid_goal.draw(Palette::Red);
 	}
 }
 
