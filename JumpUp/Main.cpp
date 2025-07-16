@@ -81,8 +81,11 @@ void Main()
 	Scaffold scaffold(0, 750, 600, 50);
 	Scaffold scaffold2(100, 600, 400, 20);
 	Scaffold scaffold3(200, 450, 200, 20);
+	Scaffold scaffold4(0, 300, 200, 20); 
+	Scaffold scaffold5(150, 150, 200, 20);
+	Scaffold scaffold6(300, 50, 100, 20);
 
-	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3 };
+	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5, scaffold6};
 
 	int jumpFrame = 0;
 
