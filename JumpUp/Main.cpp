@@ -20,6 +20,10 @@ public:
 	{
 		return m_rect.y;
 	}
+	void Scroll()
+	{
+		m_rect.y += 700;
+	}
 };
 
 class Player
@@ -74,13 +78,31 @@ public:
 		}
 	}
 
+	void Scroll()
+	{
+		m_circle.y = 700;
+	}
+
 };
+
+void GenerateNewStage(Array<Scaffold>& scaffolds)
+{
+	Scaffold scaffold6(200, 650, 300, 20);
+	Scaffold scaffold7(100, 500, 400, 20);
+	Scaffold scaffold8(0, 350, 200, 20);
+	Scaffold scaffold9(150, 200, 200, 20);
+	Scaffold Goal(300, 50, 100, 20);
+
+	scaffolds << scaffold6 << scaffold7 << scaffold8 << scaffold9 << Goal;
+}
 
 void Main()
 {
 	Window::Resize(600, 800);
 
 	Player player(300, 700, 20);
+
+	bool isNewStage = false;
 
 	Scaffold scaffold(0, 750, 600, 50);
 	Scaffold scaffold2(100, 600, 400, 20);
@@ -90,8 +112,7 @@ void Main()
 
 	Scaffold mid_goal(300, 50, 100, 20);
 
-	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5};
-	Array<Scaffold> all_scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5, mid_goal };
+	Array<Scaffold> scaffolds = { scaffold, scaffold2, scaffold3, scaffold4, scaffold5, mid_goal};
 
 	int jumpFrame = 0;
 
@@ -99,14 +120,36 @@ void Main()
 	{
 		player.draw(Palette::Blue);
 		player.update();
+		player.checkGround(scaffolds);
 
-		player.checkGround(all_scaffolds);
-
-		for (auto& scaffold : scaffolds)
+		for (int i=0;i<5;i++)
 		{
-			scaffold.draw(Palette::Green);
+			scaffolds[i].draw(Palette::Green);
 		}
-		mid_goal.draw(Palette::Red);
+		scaffolds[5].draw(Palette::Red);
+
+		if (isNewStage)
+		{
+			for (int i = 6; i < 10; i++)
+			{
+				scaffolds[i].draw(Palette::Yellow);
+			}
+			scaffolds[10].draw(Palette::Red);
+		}
+
+
+		// Debug
+		if (KeyT.down())
+		{
+			player.Scroll();
+			for (auto& scaffold : scaffolds)
+			{
+				scaffold.Scroll();
+			}
+			GenerateNewStage(scaffolds);
+			isNewStage = true;
+		}
+
 	}
 }
 
