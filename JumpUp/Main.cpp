@@ -51,6 +51,11 @@ public:
 		}
 	}
 
+	bool isPlayerOnScaffold(const Scaffold& scaffold) const
+	{
+		return scaffold.isColliding(m_circle) && m_circle.y < scaffold.get_y();
+	}
+
 	void draw(const ColorF& color) const
 	{
 		m_circle.draw(color);
@@ -87,7 +92,7 @@ public:
 
 void GenerateNewStage(Array<Scaffold>& scaffolds)
 {
-	Scaffold scaffold6(200, 650, 300, 20);
+	Scaffold scaffold6(200, 600, 300, 20);
 	Scaffold scaffold7(100, 500, 400, 20);
 	Scaffold scaffold8(0, 350, 200, 20);
 	Scaffold scaffold9(150, 200, 200, 20);
@@ -135,11 +140,14 @@ void Main()
 				scaffolds[i].draw(Palette::Yellow);
 			}
 			scaffolds[10].draw(Palette::Red);
+			if (player.isPlayerOnScaffold(scaffolds[10]))
+			{
+				Print << U"Goal Reached!";
+			}
 		}
 
 
-		// Debug
-		if (KeyT.down())
+		if (player.isPlayerOnScaffold(mid_goal) && !isNewStage)
 		{
 			player.Scroll();
 			for (auto& scaffold : scaffolds)
